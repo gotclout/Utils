@@ -67,7 +67,7 @@ class Timer
   /**
    * Retrieves the value of the timespec sec
    */
-  inline double getTimeSecs(timespec & ts) { return getTimeDSecs(ts) * 0.1000; };
+  inline double getTimeSecs(timespec & ts)  { return getTimeDSecs(ts) * 0.1000; };
 
   /**
    * get time offset (while paused until resume) nsec
@@ -119,7 +119,7 @@ class Timer
       << "End Time: "   << t.getTimeNSecs(t.endTime) << " ns "
       << "Cur Time: "   << t.getTimeNSecs(t.curTime) << " ns "
       << "Offset: "     << t.offset << " ns "
-      << "Elapsed: "    << t.elapsed() << " ns "
+      << "Elapsed: "    << t.elapsedNSecs() << " ns "
       << "Duration: "   << t.getTimeNSecs(t.endTime) -
                            t.getTimeNSecs(t.startTime) -
                            t.offset << " ns : "
@@ -197,7 +197,7 @@ class Timer
    * Compute the amount of time elapsed since the timer was last stopped
    * or checked
    */
-  tulong elapsed()
+  tulong elapsedNSecs()
   {
     tulong d;
     timespec now;
@@ -205,6 +205,31 @@ class Timer
     curTime = now;
     return d;
   };
+
+  /**
+   * Elpased Time 
+   */
+  inline double elapsedUSecs() { return elapsedNSecs() * 0.0010; };
+
+  /**
+   * Elpased Time 
+   */
+  inline double elapsedMSecs() { return elapsedUSecs() * 0.0010; };
+
+  /**
+   * Elpased Time 
+   */
+  inline double elapsedCSecs() { return elapsedMSecs() * 0.1000; };
+
+  /**
+   * Elpased Time 
+   */
+  inline double elapsedDSecs() { return elapsedCSecs() * 0.1000; };
+
+  /**
+   * Elpased Time 
+   */
+  inline double elapsedSecs()  { return elapsedDSecs() * 0.1000; };
 
   /**
    *  Converts the current time to HH:MM:SS formatted string
@@ -223,7 +248,17 @@ class Timer
     ss << now->tm_sec;
 
     return ss.str();
-  }
+  };
+
+  /**
+   * Converts current time to Www Mmm dd hh:mm:ss yyyy cstring
+   */
+  char* getCTime()
+  {
+    time_t cur;
+    time(&cur);
+    return ctime(&cur);
+  };
 
   /**
    * Compute the duration of the interval from start to stop
@@ -233,7 +268,7 @@ class Timer
     if(!stopped) stop();
 
     return getTimeNSecs(endTime) - getTimeNSecs(startTime) - offset;
-  }
+  };
 
   /**
    * Compute duration usec
@@ -274,8 +309,11 @@ class Timer
    */
   ~Timer()
   {
-    if(!stopped) stop();
-    cerr << *this;
+    if(!stopped)
+    {
+      stop();
+      cerr << *this;
+    }
   }
 };
 
@@ -307,4 +345,3 @@ class Timer
 
 #endif//_POSIX_VERSION
 #endif//_TIMER_
-
