@@ -26,14 +26,14 @@ class Timer
   tulong offset;
 
   /** Indicates whether or not the timer is stopped or running **/
-  bool stopped;
+  bool stopped, started;
 
   /**
    * Set the time for a timespec in ns
    */
   inline tulong getTime(timespec & ts)
   {
-    return !clock_gettime(CLOCK_REALTIME, &ts) ? getTimeNSecs(ts) : 0L;
+    return !clock_gettime(CLOCK_REALTIME, &ts) ? getTimeNSecs(ts) : 0;
   };
 
   /**
@@ -41,7 +41,7 @@ class Timer
    */
   inline tulong getTimeNSecs(timespec & ts)
   {
-    return (ts.tv_sec * 1e9L) + ts.tv_nsec;
+    return (ts.tv_sec * 1e9) + ts.tv_nsec;
   };
 
   /**
@@ -106,7 +106,8 @@ class Timer
    */
   Timer()
   {
-    offset = 0L; stopped = 1L;
+    offset = 0; stopped = true; started = false;
+    getTime(curTime);
   };
 
   /**
@@ -116,16 +117,16 @@ class Timer
   {
     o << "Rendering Timer - "
       << "Start Time: " << t.getTimeNSecs(t.startTime) << " ns "
-      << "End Time: "   << t.getTimeNSecs(t.endTime) << " ns "
-      << "Cur Time: "   << t.getTimeNSecs(t.curTime) << " ns "
-      << "Offset: "     << t.offset << " ns "
-      << "Elapsed: "    << t.elapsedNSecs() << " ns "
+      << "End Time: "   << t.getTimeNSecs(t.endTime)   << " ns "
+      << "Cur Time: "   << t.getTimeNSecs(t.curTime)   << " ns "
+      << "Offset: "     << t.getOffsetNSecs()          << " ns "
+      << "Elapsed: "    << t.getElapsedNSecs()         << " ns "
       << "Duration: "   << t.getTimeNSecs(t.endTime) -
                            t.getTimeNSecs(t.startTime) -
-                           t.offset << " ns : "
-      << t.getTimeSecs(t.endTime) -
-         t.getTimeSecs(t.startTime) -
-         t.getOffsetSecs() << " s\n";
+                           t.getOffsetNSecs()          << " ns : "
+                        << t.getTimeSecs(t.endTime) -
+                           t.getTimeSecs(t.startTime) -
+                           t.getOffsetSecs()           << " s\n";
 
     return o;
   };
@@ -135,13 +136,14 @@ class Timer
    */
   tulong start()
   {
-    tulong st = -1;
+    tulong st = 0;
 
     if(stopped)
     {
-      stopped = 0;
+      stopped = false;
       st = getTime(startTime);
       curTime = startTime;
+      if(!started) started = true;
     }
     else
     {
@@ -157,11 +159,11 @@ class Timer
    */
   tulong stop()
   {
-    tulong d = -1;
+    tulong d = 0;
 
     if(!stopped)
     {
-      stopped = 1;
+      stopped = true;
       d = getTime(endTime);
       curTime = endTime;
     }
@@ -181,8 +183,8 @@ class Timer
   {
     if(stopped)
     {
-      offset =  (getTime(curTime) - getTimeNSecs(endTime)) - offset;
-      stopped = 0;
+      offset += (getTime(curTime) - getTimeNSecs(endTime));
+      stopped = false;
     }
     else
     {
@@ -197,54 +199,64 @@ class Timer
    * Compute the amount of time elapsed since the timer was last stopped
    * or checked
    */
-  tulong elapsedNSecs()
+  inline tulong getElapsedNSecs()
   {
-    tulong d;
-    timespec now;
-    d = getTime(now) - getTimeNSecs(curTime);
-    curTime = now;
+    tulong d = 0;
+
+    if(started)
+    {
+      timespec now;
+      d = getTime(now) - getTimeNSecs(curTime);
+      curTime = now;
+    }
+    else
+    {
+      cerr << "ERROR: Timer has not been started, no time has elapsed."
+           << " Use Timer::start() to start the timer.\n";
+    }
+
     return d;
   };
 
   /**
-   * Elpased Time 
+   * Elpased Time usec
    */
-  inline double elapsedUSecs() { return elapsedNSecs() * 0.0010; };
+  inline double getElapsedUSecs() { return getElapsedNSecs() * 0.0010; };
 
   /**
-   * Elpased Time 
+   * Elpased Time msec
    */
-  inline double elapsedMSecs() { return elapsedUSecs() * 0.0010; };
+  inline double getElapsedMSecs() { return getElapsedUSecs() * 0.0010; };
 
   /**
-   * Elpased Time 
+   * Elpased Time csec
    */
-  inline double elapsedCSecs() { return elapsedMSecs() * 0.1000; };
+  inline double getElapsedCSecs() { return getElapsedMSecs() * 0.1000; };
 
   /**
-   * Elpased Time 
+   * Elpased Time dsec
    */
-  inline double elapsedDSecs() { return elapsedCSecs() * 0.1000; };
+  inline double getElapsedDSecs() { return getElapsedCSecs() * 0.1000; };
 
   /**
-   * Elpased Time 
+   * Elpased Time sec
    */
-  inline double elapsedSecs()  { return elapsedDSecs() * 0.1000; };
+  inline double getElapsedSecs()  { return getElapsedDSecs() * 0.1000; };
 
   /**
    *  Converts the current time to HH:MM:SS formatted string
    */
-  string getTimeStr()
+  inline string getTimeStr()
   {
     stringstream ss;
     time_t cur = time(0);
     struct tm* now = gmtime(&cur);
 
-    if(now->tm_hour < 10) ss << 0;
+    if(now->tm_hour < 10) ss << "0";
     ss << now->tm_hour << ":";
     if(now->tm_min < 10) ss << "0";
     ss << now->tm_min << ":";
-    if(now->tm_sec < 10) ss << 0;
+    if(now->tm_sec < 10) ss << "0";
     ss << now->tm_sec;
 
     return ss.str();
@@ -253,7 +265,7 @@ class Timer
   /**
    * Converts current time to Www Mmm dd hh:mm:ss yyyy cstring
    */
-  char* getCTime()
+  inline char* getCTime()
   {
     time_t cur;
     time(&cur);
@@ -263,46 +275,42 @@ class Timer
   /**
    * Compute the duration of the interval from start to stop
    */
-  tulong durationNSecs()
+  inline tulong getDurationNSecs()
   {
     if(!stopped) stop();
 
-    return getTimeNSecs(endTime) - getTimeNSecs(startTime) - offset;
+    return getTimeNSecs(endTime) - getTimeNSecs(startTime) - getOffsetNSecs();
   };
 
   /**
    * Compute duration usec
    */
-  inline double durationUSecs() { return durationNSecs() * 0.0010; };
+  inline double getDurationUSecs() { return getDurationNSecs() * 0.0010; };
 
   /**
    * Compute duration msec
    */
-  inline double durationMSecs() { return durationUSecs() * 0.0010; };
+  inline double getDurationMSecs() { return getDurationUSecs() * 0.0010; };
 
   /**
    * Compute duration csec
    */
-  inline double durationCSecs() { return durationMSecs() * 0.1000; };
+  inline double getDurationCSecs() { return getDurationMSecs() * 0.1000; };
 
   /**
    * Compute duration dsec
    */
-  inline double durationDSecs() { return durationCSecs() * 0.1000; };
+  inline double getDurationDSecs() { return getDurationCSecs() * 0.1000; };
 
   /**
    * Compute duration sec
    */
-  inline double durationSecs() { return durationDSecs() * 0.1000; };
+  inline double getDurationSecs() { return getDurationDSecs() * 0.1000; };
 
   /**
    * Reset the timer
    */
-  void reset()
-  {
-    offset = 0;
-    stopped = 1;
-  };
+  inline void reset() { offset = 0; stopped = true; };
 
   /**
    * Destructor ;)
@@ -334,9 +342,10 @@ class Timer
 
   public:
 
-  Timer()          { offset = 0; stopped = 1; };
-  void   start()   { startTime = clock(); curTime = startTime; stopped = 0; };
-  void   stop()    { endTime = clock(); curTime = endTime; stopped = 1; };
+  Timer()          { offset = 0; stopped = true; };
+  void   start()   { startTime = clock(); curTime = startTime; stopped = true; };
+  void   stop()    { endTime = clock(); curTime = endTime; stopped = true; };
+  void   reset()   { offset = 0; stopped = true; };
   tulong resume()  { offset = endTime - clock(); stopped = 0; return offset; };
   double elapsed() { return (clock() - startTime) / (double) CLOCKS_PER_SEC; };
   tulong ticks ()  { return (endTime - startTime - offset); };
