@@ -310,7 +310,7 @@ class Timer
   /**
    * Reset the timer
    */
-  inline void reset() { offset = 0; stopped = true; };
+  inline void reset() { offset = 0; stopped = 1; started = 0; startTime = clock(); };
 
   /**
    * Destructor ;)
@@ -330,7 +330,7 @@ class Timer
 #warning "POSIX CLOCK_REALTIME Unavailable, using system clock()"
 
 /**
- * The less percise time operates on system time
+ * The less percise time operates using system time
  */
 class Timer
 {
@@ -338,18 +338,19 @@ class Timer
 
   tulong offset;
 
-  bool stopped;
+  bool stopped, started;
 
   public:
 
-  Timer()          { offset = 0; stopped = true; };
-  void   start()   { startTime = clock(); curTime = startTime; stopped = true; };
-  void   stop()    { endTime = clock(); curTime = endTime; stopped = true; };
-  void   reset()   { offset = 0; stopped = true; };
-  tulong resume()  { offset = endTime - clock(); stopped = 0; return offset; };
-  double elapsed() { return (clock() - startTime) / (double) CLOCKS_PER_SEC; };
-  tulong ticks ()  { return (endTime - startTime - offset); };
-  double duration(){ return ticks() / (double) CLOCKS_PER_SEC; };
+  Timer()                 { offset = 0; stopped = 1; started = 0; startTime = clock(); };
+  inline void   start()   { curTime = startTime = clock(); stopped = 0; started = 1; };
+  inline void   stop()    { curTime = endTime = clock(); stopped = 1; };
+  inline void   reset()   { offset = 0; stopped = 1; started = 0; };
+  inline tulong resume()  { offset = endTime - clock(); stopped = 0; return offset; };
+  inline double elapsed() { return (clock() - startTime) / (double) CLOCKS_PER_SEC; };
+  inline tulong ticks ()  { return (endTime - startTime - offset); };
+  inline double duration(){ return ticks() / CLOCKS_PER_SEC; };
+  ~Timer()                { if(!stopped) { stop(); } };
 };
 
 #endif//_POSIX_VERSION
