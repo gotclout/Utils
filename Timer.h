@@ -310,7 +310,7 @@ class Timer
   /**
    * Reset the timer
    */
-  inline void reset() { offset = 0; stopped = 1; started = 0; startTime = clock(); };
+  inline void reset() { offset = 0; stopped = 1; started = 0; getTime(startTime); };
 
   /**
    * Destructor ;)
