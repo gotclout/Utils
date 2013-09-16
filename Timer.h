@@ -111,6 +111,17 @@ class Timer
   };
 
   /**
+   * Start Constructor
+   */
+  Timer(bool startTimer = true)
+  {
+    offset = 0; stopped = true; started = false;
+    getTime(curTime);
+    if(startTimer)
+     start();
+  };
+  
+  /**
    * Ouput operator overload
    */
   friend ostream& operator << (ostream & o, Timer & t)
@@ -131,6 +142,14 @@ class Timer
     return o;
   };
 
+  /**
+   * Get curr time NS public asccessor
+   */
+  inline tulong getTimeNSecs()
+  {
+    return getTimeNSecs(curTime);
+  };
+  
   /**
    * Starts the timer
    */
