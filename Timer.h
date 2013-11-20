@@ -332,6 +332,11 @@ class Timer
   inline void reset() { offset = 0; stopped = 1; started = 0; getTime(startTime); };
 
   /**
+   * Indicates the timer is running
+   */
+  inline const bool running() const { return started; };
+  
+  /**
    * Destructor ;)
    */
   ~Timer()
