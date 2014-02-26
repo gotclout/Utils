@@ -7,19 +7,36 @@
 using namespace std;
 
 /** **/
-size_t N = 25;
+size_t N = 10;
 
 /**
- *
+ * Populate with default values
  */
 void getvals(int gvals[])
 {
-  for(int i = 0; i < N; i ++)
-    gvals[i] = rand() % N + 1;
+  gvals[0] = 10;
+  gvals[1] = 5;
+  gvals[2] = 15;
+  gvals[3] = 1;
+  gvals[4] = 4;
+  gvals[5] = 20;
+  gvals[6] = 11;
+  gvals[7] = 30;
+  gvals[8] = 25;
+  gvals[9] = 0;
 }
 
 /**
- *
+ * Populate with random values
+ */
+void getrandvals(int gvals[])
+{
+  for(int i = 0; i < N; i ++)
+    gvals[i] = rand() % (2*N) + 1;
+}
+
+/**
+ * Test tree operations
  */
 void testtree(int gvals[])
 {
@@ -29,48 +46,52 @@ void testtree(int gvals[])
   {
     cout << "INSERTING: " << gvals[i] << endl;
     t->insert(gvals[i], gvals[i]);
-    cout << "***BFS***" << endl;
+    cout << "\n---BFS---" << endl;
     t->printbfs();
   }
 
+  cout << "INSERTING: " << gvals[9] << '\n';
+  if(!t->insert(gvals[9], gvals[9]))
+    cout << "DUPLICATE INSERT OK\n\n";
+
   cout << "NODE COUNT: " << t->size() << endl;
   cout << "TREE DEPTH: " << t->getDepth() << endl;
-  cout << "***BFS***" << endl;
+  cout << "\n---BFS---" << endl;
   t->printbfs();
-  cout << "***PREORDER***" << endl;
+  cout << "\n---PREORDER---" << endl;
   t->printpreorder(t->getRoot());
-  cout << "***POSTORDER***" << endl;
+  cout << "\n---POSTORDER---" << endl;
   t->printpostorder(t->getRoot());
-  cout << "***INORDER***" << endl;
+  cout << "\n---INORDER---" << endl;
   t->printinorder(t->getRoot());
-  cout << "***VALUE SEARCH***" << endl;
+  cout << "\n---VALUE SEARCH---" << endl;
   tnode<int, int>* tn = t->findnode(gvals[N - 1]);
-  cout << "***NEXT NODE SEARCH***" << endl;
+  cout << "\n---NEXT NODE SEARCH---" << endl;
   if(tn)
   {
     tnode<int, int>* nn = t->nextnode(tn);
-    cout << "NEXT NODE DEPTH\n" << *nn << endl;
+    cout << "\n---NEXT NODE DEPTH---\n" << *nn << endl;
   }
-  cout << "***PREV NODE SEARCH***" << endl;
+  cout << "\n---PREV NODE SEARCH---" << endl;
   if(tn)
   {
     tnode<int, int>* pn = t->prevnode(tn);
     cout << "PREV NODE DEPTH\n" << *pn << endl;
   }
-  cout << "***DELETING NODE***" << endl;
+  cout << "\n---DELETING NODE---" << endl;
   if(tn) t->deletenode(tn);
   cout << "TREE DEPTH: " << t->getDepth() << endl;
   tn = 0;
   cout << "NODE COUNT: " << t->size() << endl;
-  cout << "***INORDER***" << endl;
+  cout << "\n---INORDER---" << endl;
   t->printinorder(t->getRoot());
-  cout << "***DESTROYING***" << endl;
+  cout << "\n---DESTROYING---" << endl;
   delete t;
   t = 0;
 }
 
 /**
- *
+ * Call tree test operatoions
  */
 int main(int argc, char** argv)
 {
