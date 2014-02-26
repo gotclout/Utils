@@ -38,13 +38,26 @@ class tnode
     tnode() { parent = left = right = 0; ndepth = 0; };
 
     /**
+     * Construct from kv pair
+     */
+    tnode(const K & kk, const V & vv, tnode* p = 0, tnode* l = 0, tnode* r = 0)
+    {
+      kv.key   = kk;
+      kv.value = vv;
+      parent = p;
+      left = l;
+      right = 0;
+    };
+
+
+    /**
      * Retrieves the key
      *
      * @return const K is a ref to the key
      */
-    const K& getKey() const
+    const K& key() const
     {
-      return kv.k;
+      return kv.key;
     };
 
     /**
@@ -52,9 +65,9 @@ class tnode
      *
      * @return const V is a ref to the value
      */
-    const V& getValue() const
+    const V& value() const
     {
-      return kv.v;
+      return kv.value;
     };
 
     /**
@@ -69,7 +82,14 @@ class tnode
       o << "KEY:   " << n.kv.key << '\n'
         << "VALUE: " << n.kv.value << '\n'
         << "DEPTH: " << n.ndepth << '\n';
-
+      if(n.left)
+        cout << "LEFT:  " << n.left->kv.key << '\n';
+      else
+        cout << "LEFT:  " << "nil\n";
+      if(n.right)
+        cout << "RIGHT: " << n.right->kv.key << '\n';
+      else
+        cout << "RIGHT: " << "nil\n";
       return o;
     };
 };
@@ -152,15 +172,9 @@ class tree
 
       if(!pn)
       {
-        node* n = new node();
-        n->kv.key = k;
-        n->kv.value = v;
+        node* n = new node(k, v);
 
-        if(!root)
-        {
-          n->ndepth = 1;
-          root = n;
-        }
+        if(!root)root = n;
         else
         {
           n->parent = helper;
@@ -168,21 +182,56 @@ class tree
         }
 
         pn = n;
-        ++nodes;
 
         if(n->ndepth > tdepth) tdepth = n->ndepth;
+      }
+      else if(!pn->right && !pn->left)
+      {
+        if(k < pn->kv.key) pn->left = new node(k, v, pn);
+        else if(k > pn->kv.key) pn->right = new node(k, v, pn);
+        else retVal = false;
+      }
+      else if(!pn->left && k < pn->kv.key) pn->left = new node(k, v, pn);
+      else if(!pn->right && k > pn->kv.key) pn->right = new node(k, v, pn);
+      else if(!pn->right && pn->left && k < pn->kv.key && pn != root)
+      {
+        if(pn->left->key() == k) retVal = false;
+        else
+        {
+          node* n = new node(k, v, pn->parent);
+          helper = pn;
+          if(pn->parent->left == pn) pn->parent->left = n;
+          else pn->parent->right = n;
+          n->left = helper->left;
+          n->right = helper;
+          helper->left = 0;
+          n->left->parent = n->right->parent = n;
+        }
+      }
+      else if(!pn->left && pn->right && k > pn->kv.key && pn != root)
+      {
+        if(pn->right->key() == k) retVal = false;
+        else
+        {
+          node* n = new node(k, v, pn->parent);
+          helper = pn;
+          if(pn->parent->left == pn) pn->parent->left = n;
+          else pn->parent->right = n;
+          n->right = helper->right;
+          n->left = helper;
+          helper->right = 0;
+          n->right->parent = n->left->parent = n;
+        }
       }
       else
       {
         helper = pn;
-        if(k < pn->kv.key)
-          insert(k, v, pn->left);
-        else if(k > pn->kv.key)
-          insert(k, v, pn->right);
-        else
-          retVal = false;
+        if(k < pn->kv.key) retVal = insert(k, v, pn->left);
+        else if(k > pn->kv.key) retVal = insert(k, v, pn->right);
+        else retVal = false;
       }
 
+      if(retVal) ++nodes;
       return retVal;
     };
 
@@ -199,7 +248,7 @@ class tree
 
       if(target)
       {
-        cout << "DELETING NODE: " << n->kv.key << endl;
+        cout << "\nTARGET NODE\n" << *n << '\n';
         if(target == root) //root node
         {
           if(target->left && target->right)
@@ -342,7 +391,7 @@ class tree
       {
         if(k == cur->kv.key)
         {
-          cout << "LOOKUPS: " << i << endl;
+          cout << "LOOKUPS: " << i << "\n\n";
           return cur;
         }
         else if(k < cur->kv.key)
@@ -383,7 +432,7 @@ class tree
         while(lcur)
         {
           tcur = (node*)lcur->data;
-          cout << "BFS TREE NODE VALUE: " << (tcur->kv.value) << endl;
+          cout << "BFS NODE\n" << *tcur << '\n';
           lcur = lcur->next;
         }
       }
