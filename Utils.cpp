@@ -16,6 +16,37 @@ using namespace std;
   sstr << str; \
   sstr >> retVal;
 
+//sorting
+template<typename Container, typename Object>
+qsort(Container & c, const size_t left, const size_t right)
+{
+  size_t i = left, j = right - 1;
+
+  if(right - left <= 1)
+    return;
+  else
+  {
+    int pivot = c.at((left + right)/2);
+  
+    while(i <= j)
+    {
+      while(c.at(i) < pivot)i++;
+      while(c.at(j) > pivot)j--;
+
+      if(i <= j)
+      {
+        Object tmp = c.at(i);
+        c.at(i++) = c.at(j);
+        c.at(j--) = tmp;
+      }
+      if(left < j)
+        qsort(c, left, j);
+      if(i < right)
+        qsort(c, i, right);
+    }
+  }
+}
+
 //data type coersion
 template <typename T1, typename T2>
 T2 cast(T1 from, T2 to)
