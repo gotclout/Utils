@@ -35,7 +35,7 @@ class tnode
     /**
      * Default Constructor
      */
-    tnode() { parent = left = right = 0; ndepth = 0; };
+    tnode() { parent = left = right = 0; ndepth = 1; };
 
     /**
      * Construct from kv pair
@@ -79,17 +79,21 @@ class tnode
      */
     friend ostream& operator << (ostream & o, tnode & n)
     {
-      o << "KEY:   " << n.kv.key << '\n'
-        << "VALUE: " << n.kv.value << '\n'
-        << "DEPTH: " << n.ndepth << '\n';
+      o << "KEY:    " << n.kv.key << '\n'
+        << "VALUE:  " << n.kv.value << '\n'
+        << "DEPTH:  " << n.ndepth << '\n';
       if(n.left)
-        cout << "LEFT:  " << n.left->kv.key << '\n';
+        cout << "LEFT:   " << n.left->key() << '\n';
       else
-        cout << "LEFT:  " << "nil\n";
+        cout << "LEFT:   " << "nil\n";
       if(n.right)
-        cout << "RIGHT: " << n.right->kv.key << '\n';
+        cout << "RIGHT:  " << n.right->key() << '\n';
       else
-        cout << "RIGHT: " << "nil\n";
+        cout << "RIGHT:  " << "nil\n";
+      if(n.parent)
+        cout << "PARENT: " << n.parent->key() << '\n';
+      else
+        cout << "PARENT: " << "nil\n";
       return o;
     };
 };
@@ -169,12 +173,12 @@ class tree
     bool insert(const K & k, const V & v, node* & pn)
     {
       bool retVal = true;
-
+      node* n = 0;
       if(!pn)
       {
-        node* n = new node(k, v);
+        n = new node(k, v);
 
-        if(!root)root = n;
+        if(!root) root = n;
         else
         {
           n->parent = helper;
@@ -182,23 +186,32 @@ class tree
         }
 
         pn = n;
-
-        if(n->ndepth > tdepth) tdepth = n->ndepth;
       }
       else if(!pn->right && !pn->left)
       {
-        if(k < pn->kv.key) pn->left = new node(k, v, pn);
-        else if(k > pn->kv.key) pn->right = new node(k, v, pn);
-        else retVal = false;
+        if(k == pn->key()) retVal = false;
+        else
+        {
+          n = new node(k, v, pn);
+          k < pn->key() ? pn->left = n : pn->right = n;
+        }
       }
-      else if(!pn->left && k < pn->kv.key) pn->left = new node(k, v, pn);
-      else if(!pn->right && k > pn->kv.key) pn->right = new node(k, v, pn);
-      else if(!pn->right && pn->left && k < pn->kv.key && pn != root)
+      else if(!pn->left && k < pn->key())
+      {
+        n = new node(k, v, pn);
+        pn->left = n;//new node(k, v, pn);
+      }
+      else if(!pn->right && k > pn->key())
+      {
+        n = new node(k, v, pn);
+        pn->right = n;//new node(k, v, pn);
+      }
+      else if(!pn->right && pn->left && k < pn->key() && pn != root)
       {
         if(pn->left->key() == k) retVal = false;
         else
         {
-          node* n = new node(k, v, pn->parent);
+          n = new node(k, v, pn->parent);
           helper = pn;
           if(pn->parent->left == pn) pn->parent->left = n;
           else pn->parent->right = n;
@@ -208,12 +221,12 @@ class tree
           n->left->parent = n->right->parent = n;
         }
       }
-      else if(!pn->left && pn->right && k > pn->kv.key && pn != root)
+      else if(!pn->left && pn->right && k > pn->key() && pn != root)
       {
         if(pn->right->key() == k) retVal = false;
         else
         {
-          node* n = new node(k, v, pn->parent);
+          n = new node(k, v, pn->parent);
           helper = pn;
           if(pn->parent->left == pn) pn->parent->left = n;
           else pn->parent->right = n;
@@ -226,12 +239,20 @@ class tree
       else
       {
         helper = pn;
-        if(k < pn->kv.key) retVal = insert(k, v, pn->left);
-        else if(k > pn->kv.key) retVal = insert(k, v, pn->right);
+        if(k < pn->key()) retVal = insert(k, v, pn->left);
+        else if(k > pn->key()) retVal = insert(k, v, pn->right);
         else retVal = false;
       }
 
-      if(retVal) ++nodes;
+      if(retVal)
+      {
+        ++nodes;
+        if(n && n != root)
+        {
+          n->ndepth = n->parent->ndepth + 1;
+          if(n->ndepth > tdepth) tdepth = n->ndepth;
+        }
+      }
       return retVal;
     };
 
@@ -249,6 +270,8 @@ class tree
       if(target)
       {
         cout << "\nTARGET NODE\n" << *n << '\n';
+        if(n->ndepth < tdepth)
+          --tdepth;
         if(target == root) //root node
         {
           if(target->left && target->right)
@@ -268,8 +291,6 @@ class tree
         }
         else if(!target->left && !target->right) //leaf node
         {
-          if(n->ndepth == tdepth)
-            --tdepth;
           target->parent->right = target->parent->left = NULL;
         }
         else if(target == target->parent->right) //right child
@@ -428,13 +449,8 @@ class tree
             tcur = (node*)lcur->data;
         }
 
-        lcur = q.front();
-        while(lcur)
-        {
-          tcur = (node*)lcur->data;
-          cout << "BFS NODE\n" << *tcur << '\n';
-          lcur = lcur->next;
-        }
+        while(!q.empty())
+          cout << "BFS NODE\n" << *(q.dequeue()) << '\n';
       }
     };
 
