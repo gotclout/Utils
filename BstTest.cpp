@@ -6,8 +6,8 @@
 
 using namespace std;
 
-/** **/
-size_t N = 10;
+/** Default node size **/
+size_t N = 17;
 
 /**
  * Populate with default values
@@ -24,6 +24,13 @@ void getvals(int gvals[])
   gvals[7] = 30;
   gvals[8] = 25;
   gvals[9] = 0;
+  gvals[10] = 6;
+  gvals[11] = 7;
+  gvals[12] = 22;
+  gvals[13] = 2;
+  gvals[14] = 3;
+  gvals[15] = 31;
+  gvals[16] = 13;
 }
 
 /**
