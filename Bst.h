@@ -179,11 +179,7 @@ class tree
         n = new node(k, v);
 
         if(!root) root = n;
-        else
-        {
-          n->parent = helper;
-          n->ndepth = helper->ndepth + 1;
-        }
+        else n->parent = helper;
 
         pn = n;
       }
@@ -199,12 +195,12 @@ class tree
       else if(!pn->left && k < pn->key())
       {
         n = new node(k, v, pn);
-        pn->left = n;//new node(k, v, pn);
+        pn->left = n;
       }
       else if(!pn->right && k > pn->key())
       {
         n = new node(k, v, pn);
-        pn->right = n;//new node(k, v, pn);
+        pn->right = n;
       }
       else if(!pn->right && pn->left && k < pn->key() && pn != root)
       {
@@ -251,6 +247,7 @@ class tree
         {
           n->ndepth = n->parent->ndepth + 1;
           if(n->ndepth > tdepth) tdepth = n->ndepth;
+          retVal = false;
         }
       }
       return retVal;
