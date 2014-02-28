@@ -6,8 +6,8 @@
 
 using namespace std;
 
-/** Default node size **/
-size_t N = 17;
+/** **/
+size_t N = 19;
 
 /**
  * Populate with default values
@@ -31,6 +31,8 @@ void getvals(int gvals[])
   gvals[14] = 3;
   gvals[15] = 31;
   gvals[16] = 13;
+  gvals[17] = 29;
+  gvals[18] = 19;
 }
 
 /**
@@ -38,8 +40,55 @@ void getvals(int gvals[])
  */
 void getrandvals(int gvals[])
 {
-  for(int i = 0; i < N; i ++)
+  for(int i = 0; i < N; i++)
     gvals[i] = rand() % (2*N) + 1;
+}
+
+/**
+ *
+ */
+void testinsertions()
+{
+}
+
+/**
+ *
+ */
+void testdeletions()
+{
+
+}
+
+/**
+ *
+ */
+void testsearch()
+{
+
+}
+
+/**
+ *
+ */
+void testnextnode()
+{
+
+}
+
+/**
+ *
+ */
+void testprevnode()
+{
+
+}
+
+/**
+ *
+ */
+void testprinting()
+{
+
 }
 
 /**
