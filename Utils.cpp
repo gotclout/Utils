@@ -300,10 +300,7 @@ string strfp(const string & src, const string & fstr, const string & rstr)
   size_t pos = src.find(fstr);
 
   if(pos != string::npos)
-  {
-    retVal = src;
-    retVal.replace(pos, fstr.length(), rstr);
-  }
+    retVal = src.substr(pos+1, src.length() - 1);
   else
     retVal = "Search string " + fstr + " not found.";
 
