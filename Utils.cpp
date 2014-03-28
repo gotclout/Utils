@@ -8,41 +8,49 @@
 #include <list>
 #include <map>
 
-//QUINE?
+#include <math.h>
 
 using namespace std;
+
+//could be defined
+//#define max(a, b) a > b ? a : b
+//#define min(a, b) a < b ? a : b
+//g++ test.cpp -o test -lpthread
+//QUINE?
 
 #define strtoval() \
   sstr << str; \
   sstr >> retVal;
 
-//sorting
-template<typename Container, typename Object>
-qsort(Container & c, const size_t left, const size_t right)
-{
-  size_t i = left, j = right - 1;
+//#define value_type typename Container::value_type
 
-  if(right - left <= 1)
+//sorting
+template <class Container>
+void aqsort(Container & c, size_t left, size_t right)
+{
+  size_t i = left, j = right;
+
+  if(j - i <= 1)
     return;
   else
   {
-    int pivot = c.at((left + right)/2);
-  
-    while(i <= j)
+     typename Container::value_type pivot = c.at((left + right)/2);
+
+    while(i < j)
     {
       while(c.at(i) < pivot)i++;
       while(c.at(j) > pivot)j--;
 
-      if(i <= j)
+      if(i < j)
       {
-        Object tmp = c.at(i);
+        typename Container::value_type tmp = c.at(i);
         c.at(i++) = c.at(j);
         c.at(j--) = tmp;
       }
       if(left < j)
-        qsort(c, left, j);
+        aqsort(c, left, j);
       if(i < right)
-        qsort(c, i, right);
+        aqsort(c, i, right);
     }
   }
 }
@@ -293,6 +301,20 @@ char* cstrcp(const char* & src)
   return retVal;
 }
 
+//same as below but in place since src is mutable
+string& strfpip(string & src, const string & fstr, const string & rstr)
+{
+  size_t pos = src.find(fstr);
+
+  if(pos != string::npos)
+    return src.replace(pos, fstr.length(), rstr);
+  else
+  {
+    cerr << "ERROR: Search string " + fstr + " not found.\n";
+    return src;
+  }
+}
+
 string strfp(const string & src, const string & fstr, const string & rstr)
 {
   string retVal = "";
@@ -300,9 +322,9 @@ string strfp(const string & src, const string & fstr, const string & rstr)
   size_t pos = src.find(fstr);
 
   if(pos != string::npos)
-    retVal = src.substr(pos+1, src.length() - 1);
+    retVal = src.substr(0, pos) + rstr;
   else
-    retVal = "Search string " + fstr + " not found.";
+    cerr << "ERROR: Search string " + fstr + " not found.\n";
 
   return retVal;
 }
@@ -314,12 +336,9 @@ string strsubstr(const string & src, const string & delim)
   size_t pos = src.find_first_of(delim);
 
   if(pos != string::npos)
-  {
-    retVal = src;
-    retVal = retVal.substr(pos+1, retVal.length() - 1);
-  }
+    retVal = src.substr(pos+1, src.length() - 1);
   else
-    retVal = "Delimiter " + delim + " not found.";
+    cerr << "ERROR: Delimiter " + delim + " not found.\n";
 
   return retVal;
 }
@@ -338,7 +357,9 @@ int main(int argc, char* argv[])
   double d = 0.0, dd = 2, ddd = 0.0;
   buff = "9.99999";
   string sub = strsubstr(file, ".");
+  string esub = strsubstr(file, "+");
   const char * original = "original";
+  vector<int> ivector;
 
   cout << "Substring of " << file << " using . delimiter = " << sub << endl;
 
@@ -365,11 +386,29 @@ int main(int argc, char* argv[])
   cout << "Casting short* " << s << " to long* yeilds: " << ll << endl;
 
   dd = CastToDouble(&d);
-  //This is the same as above
-  //dd = CastTo(&d, dd);
+  /*
+    This is the same as above
+    dd = CastTo(&d, dd);
+  */
 
   cout << "Casting double " << d << " to double yeilds: " << dd << endl;
-  cout << "Before:\t" << str << endl << "After:\t" << strfp(str, fstr, rstr) << endl;
+  cout << "String Find & Replace\n" << "Before:\t" << str << endl
+       << "After:\t" <<  strfp(str, fstr, rstr) << endl;
+  string cpystr = str;
+  strfpip(cpystr, fstr, rstr);
+  cout << "String In Place Find & Replace: " << cpystr << endl;
+  cout << "String Find & Replace " << rstr << " with " << fstr << " in: "
+       << str << endl << strfp(str, rstr, fstr) << endl;
+
+  for(int i = 7; i > -1; --i) ivector.push_back(i);
+  cout << "ivector: ";
+  for(int i = 0; i < ivector.size(); ++i) cout << ivector.at(i);
+  size_t left = 0,
+         right = ivector.size() -1;
+  aqsort(ivector, left, right);
+  cout << "\nivector: ";
+  for(int i = 0; i < ivector.size(); ++i) cout << ivector.at(i);
+  cout << endl;
 
   buff = mkfilebuf(file);
   file += ".bak";
