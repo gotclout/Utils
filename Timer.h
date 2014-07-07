@@ -33,6 +33,7 @@ int clock_gettime(int /* clk_id */, struct timespec* t)
 //Posix or Mac OS
 #if defined(_POSIX_VERSION) || defined(__MACH__)
 
+/** suffix string constants **/
 const static char* suffix[] =
 {
   "s",
@@ -43,6 +44,7 @@ const static char* suffix[] =
   "ns"
 };
 
+/** suffix string enum **/
 enum eSuffix
 {
   eSec = 0,
@@ -52,7 +54,6 @@ enum eSuffix
   eUsec,
   eNsec
 };
-
 
 /**
  * A realtime precision timer for POSIX complient systems
@@ -69,7 +70,7 @@ class Timer
   /** Indicates whether or not the timer is stopped or running **/
   bool stopped, started;
 
-  /** **/
+  /** This timers suffix enum **/
   eSuffix sfx;
 
   /**
