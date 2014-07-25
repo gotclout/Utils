@@ -1,45 +1,34 @@
-#include <iostream>
-#include <fstream>
-#include <sstream>
+#include <map>
+#include <list>
+#include <vector>
+#include <math.h>
 #include <string>
 #include <iomanip>
-
-#include <vector>
-#include <list>
-#include <map>
-
-#include <math.h>
+#include <fstream>
+#include <sstream>
+#include <iostream>
+#include <string.h>
 
 using namespace std;
 
-//could be defined
-//#define max(a, b) a > b ? a : b
-//#define min(a, b) a < b ? a : b
-//g++ test.cpp -o test -lpthread
-//QUINE?
-
-#define strtoval() \
-  sstr << str; \
-  sstr >> retVal;
-
+#define strtoval() sstr << str; sstr >> retVal;
 #define value_type_t typename Container::value_type
 
 //sorting
 template <class Container>
-void aqsort(Container & c, size_t left, size_t right)
+void aqsort(Container & c, const size_t left, const size_t right)
 {
   size_t i = left, j = right;
 
-  if(j - i <= 1)
-    return;
+  if(j - i <= 1) return;
   else
   {
     value_type_t pivot = c.at((left + right)/2);
 
     while(i < j)
     {
-      while(c.at(i) < pivot)i++;
-      while(c.at(j) > pivot)j--;
+      while(c.at(i) < pivot) i++;
+      while(c.at(j) > pivot) j--;
 
       if(i < j)
       {
@@ -47,10 +36,9 @@ void aqsort(Container & c, size_t left, size_t right)
         c.at(i++) = c.at(j);
         c.at(j--) = tmp;
       }
-      if(left < j)
-        aqsort(c, left, j);
-      if(i < right)
-        aqsort(c, i, right);
+      
+      if(left < j) aqsort(c, left, j);
+      if(i < right) aqsort(c, i, right);
     }
   }
 }
