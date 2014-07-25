@@ -22,7 +22,7 @@ using namespace std;
   sstr << str; \
   sstr >> retVal;
 
-//#define value_type typename Container::value_type
+#define value_type_t typename Container::value_type
 
 //sorting
 template <class Container>
@@ -34,7 +34,7 @@ void aqsort(Container & c, size_t left, size_t right)
     return;
   else
   {
-     typename Container::value_type pivot = c.at((left + right)/2);
+    value_type_t pivot = c.at((left + right)/2);
 
     while(i < j)
     {
@@ -43,7 +43,7 @@ void aqsort(Container & c, size_t left, size_t right)
 
       if(i < j)
       {
-        typename Container::value_type tmp = c.at(i);
+        value_type_t tmp = c.at(i);
         c.at(i++) = c.at(j);
         c.at(j--) = tmp;
       }
