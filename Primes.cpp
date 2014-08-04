@@ -46,13 +46,13 @@ class Primes
     /**
      * Initialize
      */
-    explicit Primes() : primeV(ULLONG_MAX, false)
+    explicit Primes() : primeV(ULONG_MAX, false)
     {
       primeV[2] = true;
     };
 
     /**
-     * Compute primes uing sieve up to init
+     * Compute primes using sieve up to init
      */
     explicit Primes(const tulong & init) : primeV(init, true)
     {
@@ -64,11 +64,11 @@ class Primes
       primeV[0] = primeV[1] = false;
 
       //if prime mark off the factors of the prime
-      for(; (sq = idx*idx) <= init; idx++)
+      for(; (sq = idx*idx) <= init; ++idx)
       {
         if(primeV[idx])
         {
-          for(jdx = sq, j = 0; jdx < init; j++, jdx = (sq) + (j*idx))
+          for(jdx = sq, j = 0; jdx < init; ++j, jdx = (sq) + (j*idx))
           {
             if(primeV[jdx])
             {
@@ -80,13 +80,9 @@ class Primes
       }
 
       //find the max prime and set it
-      while(i > idx && !max)
-      {
-        if(primeV[i--])
-          max = 1 + i;
-      }
+      while(i > idx && !max) if(primeV[i--]) max = 1 + i;
 
-      count--;
+      --count;
     };
 
     /**
@@ -102,11 +98,11 @@ class Primes
         primeV[0] = primeV[1] = false;
 
         //if prime mark off the factors of the prime
-        for(; (sq = idx*idx) <= init; idx++)
+        for(; (sq = idx*idx) <= init; ++idx)
         {
           if(primeV[idx])
           {
-            for(jdx = sq, j = 0; jdx < init; j++, jdx = (sq) + (j*idx))
+            for(jdx = sq, j = 0; jdx < init; ++j, jdx = (sq) + (j*idx))
             {
               if(primeV[jdx])
               {
@@ -118,13 +114,8 @@ class Primes
         }
 
         //find the max prime and set it
-        while(i > idx && !max)
-        {
-          if(primeV[i--])
-            max = 1 + i;
-        }
-
-        count--;
+        while(i > idx && !max) if(primeV[i--]) max = 1 + i;
+        --count;
       }
     };
 
@@ -135,10 +126,8 @@ class Primes
     {
       tulong rval = i;
 
-      if(++rval > max)
-        while(!isprime(rval)) rval++;
-      else
-        while(!primeV[rval]) rval++;
+      if(++rval > max) while(!isprime(rval)) rval++;
+      else while(!primeV[rval]) rval++;
 
       return rval;
     };
@@ -160,33 +149,33 @@ class Primes
      */
     inline bool isprime(const tulong & p)
     {
-      retVal = true;
+      //retVal = true;
 
       if(p > max)
       {
+        genprimes(p);
+      }/*
         next = idx = 2;
         do
         {
-          if(p % next == 0)
+          if(!(p % next))
           {
             primeV.push_back(false);
             retVal = false;
           }
-          else
-            next = nextprime();
+          else next = nextprime();
         }while(retVal && next < sqrt(p) + 1);
 
-        if(retVal)
+        if(retVal && ++count) //update globals
         {
           primeV.push_back(true);
           max = p;
-          count++;
         }
       }
-      else
-        retVal = primeV[p];
+      else retVal = primeV[p];
 
-      return retVal;
+      return retVal;*/
+      return primeV[p];
     };
 };
 
