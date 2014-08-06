@@ -147,7 +147,7 @@ class Primes
     };
 
     /**
-     *
+     * Ouputstream operator overload for pointer types
      */
     friend ostream& operator<<(ostream & o, Primes* & p)
     {
@@ -155,7 +155,7 @@ class Primes
     };
 
     /**
-     *
+     * Outputstream operator overload
      */
     friend ostream& operator<<(ostream & o, Primes & p)
     {
