@@ -4,6 +4,7 @@
 #include <vector>
 #include <cmath>
 #include <climits>
+#include <ostream>
 
 using namespace std;
 
@@ -48,7 +49,8 @@ class Primes
      */
     explicit Primes() : primeV(ULONG_MAX, false)
     {
-      primeV[2] = true;
+      max = 2;
+      primeV[max] = true;
     };
 
     /**
@@ -56,11 +58,10 @@ class Primes
      */
     explicit Primes(const tulong & init) : primeV(init, true)
     {
+      tulong  j, i = init;
       max = 0;
-      //genprimes(init);
-      tulong  j, i;
       idx = 2;
-      i = count = init - 1;
+      count = init - 2;
       primeV[0] = primeV[1] = false;
 
       //if prime mark off the factors of the prime
@@ -80,54 +81,48 @@ class Primes
       }
 
       //find the max prime and set it
-      while(i > idx && !max) if(primeV[i--]) max = 1 + i;
-
-      --count;
+      while(--i > idx && !max) if(primeV[i]) max = i;
     };
 
     /**
-     * TODO: Use sieve for updating primeV in isprime()
+     * Use sieve for updating primeV in isprime()
      */
     inline void genprimes(const tulong & init)
     {
-      if(max == 0)
-      {
-        tulong  j, i;
-        idx = 2;
-        i = count = init - 1;
-        primeV[0] = primeV[1] = false;
+      tulong  j, i = init - primeV.size() + 1;
+      max = 0;
+      idx = 2;
+      primeV.insert(primeV.end(), i, true);
+      i = primeV.size();
+      count = i - count - 2;
 
-        //if prime mark off the factors of the prime
-        for(; (sq = idx*idx) <= init; ++idx)
+      //if prime mark off the factors of the prime
+      for(; (sq = idx*idx) <= size(); ++idx)
+      {
+        if(primeV[idx])
         {
-          if(primeV[idx])
+          for(jdx = sq, j = 0; jdx < size() ; ++j, jdx = (sq) + (j*idx))
           {
-            for(jdx = sq, j = 0; jdx < init; ++j, jdx = (sq) + (j*idx))
+            if(primeV[jdx])
             {
-              if(primeV[jdx])
-              {
-                primeV[jdx] = false;
-                --count;
-              }
+              primeV[jdx] = false;
+              --count;
             }
           }
         }
-
-        //find the max prime and set it
-        while(i > idx && !max) if(primeV[i--]) max = 1 + i;
-        --count;
       }
+      //find the max prime and set it
+      while(--i > idx && !max) if(primeV[i]) idx = max = i;
     };
 
     /**
      * Locate the next prime greater than the specified value
      */
-    inline tulong nextprime(const tulong & i)
+    inline tulong nextprime(const tulong & cur)
     {
-      tulong rval = i;
-
-      if(++rval > max) while(!isprime(rval)) rval++;
-      else while(!primeV[rval]) rval++;
+      tulong rval = cur, next = max;
+      if(++rval > max) while(next == max) genprimes(++rval);
+      while(!primeV[rval]) ++rval;
 
       return rval;
     };
@@ -138,7 +133,6 @@ class Primes
     inline tulong nextprime()
     {
       while(!primeV[++idx]) {;}
-
       return idx;
     };
 
@@ -149,33 +143,37 @@ class Primes
      */
     inline bool isprime(const tulong & p)
     {
-      //retVal = true;
+      return (primeV.size() - 1 < p) ? nextprime(p) : primeV[p];
+    };
 
-      if(p > max)
+    /**
+     *
+     */
+    friend ostream& operator<<(ostream & o, Primes* & p)
+    {
+      return operator<<(o, *p);
+    };
+
+    /**
+     *
+     */
+    friend ostream& operator<<(ostream & o, Primes & p)
+    {
+      o << "Rendering Primes...\n";
+
+      size_t sz = p.size();
+      o << "SIZE:   " << sz << "\nPRIMES: " << p.nump()
+        << "\nMAX:    " << p.maxp() << '\n';
+
+      for(size_t c = 0; c < sz; ++c)
       {
-        genprimes(p);
-      }/*
-        next = idx = 2;
-        do
-        {
-          if(!(p % next))
-          {
-            primeV.push_back(false);
-            retVal = false;
-          }
-          else next = nextprime();
-        }while(retVal && next < sqrt(p) + 1);
-
-        if(retVal && ++count) //update globals
-        {
-          primeV.push_back(true);
-          max = p;
-        }
+        o << "v[" << c << "] : ";
+        if(p.primeV[c]) o << '1';
+        else o << '0';
+        o << endl;
       }
-      else retVal = primeV[p];
 
-      return retVal;*/
-      return primeV[p];
+      return o;
     };
 };
 
