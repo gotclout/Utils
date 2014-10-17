@@ -385,7 +385,8 @@ void testsort()
     cout << "Sorted Values..." << endl << sstr.str() << endl;
 
     cout << "Total number of sift operations " << sifts << endl;
-    cout << "Time to remove heap root with " << n << "elements" << endl << t2 << endl;
+    cout << "Time to remove heap root with " << n << " elements"
+         << endl << t2 << endl;
 
     stats.init();
   }
