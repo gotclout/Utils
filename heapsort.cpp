@@ -111,15 +111,14 @@ template <typename T> class HeapT
  *
  */
 template<typename T>
-HeapT<T>::HeapT()
+HeapT<T>::HeapT(int psz = 2*n + 1)
 {
-  Sz = 100;
+  Sz = psz;
   Hp = new T[Sz];
   numVertices = 0;
 
   for(int i=0; i<Sz; i++)
     Hp[i] = NULL;
-
 }
 
 /**
@@ -213,24 +212,15 @@ void HeapT<T>::SiftDown(int toSift)
   {
     int MaxChild = leftChild(toSift);
 
-    if ( (MaxChild < numVertices - 1) && (Hp[MaxChild] > Hp[MaxChild + 1]) )
+    if ((MaxChild < numVertices - 1) && (Hp[MaxChild] > Hp[MaxChild + 1]) )
       MaxChild++;
-    /*if(*Hp[MaxChild] == *Hp[MaxChild + 1])
-    {
-      T tmpItem = Hp[toSift];
-      T tmpItem2 = Hp[numVertices - 1] ;
-      Hp[toSift] = Hp[MaxChild];
-      Hp[numVertices - 1] = tmpItem;
-      Hp[MaxChild] = tmpItem2;
-      toSift = MaxChild;
-      return;
-    }*/
 
     if (Hp[toSift] <= Hp[MaxChild]) return;
-      T tmpItem = Hp[toSift];
-    Hp[toSift] = Hp[MaxChild];
+    T tmpItem  = Hp[toSift];
+
+    Hp[toSift]   = Hp[MaxChild];
     Hp[MaxChild] = tmpItem;
-    toSift = MaxChild;
+    toSift       = MaxChild;
   }
 }
 
@@ -263,8 +253,8 @@ T HeapT<T>::RemoveRoot()
     T tmpItem;
     for(int j=0; j<numVertices; j++)
     {
-          tmpItem = Hp[j];
-        Hp[j] = Hp[j+1];
+        tmpItem = Hp[j];
+        Hp[j]   = Hp[j+1];
         Hp[j+1] = tmpItem;
     }
       numVertices--;
@@ -341,10 +331,10 @@ bool HeapT<T>::Insert(const T& Data)
   int swaps = 0;
   while(curr != 0 && Hp[curr] < Hp[Parent(curr)])
   {
-    T temp = Hp[curr];
-    Hp[curr] = Hp[Parent(curr)];
+    T temp           = Hp[curr];
+    Hp[curr]         = Hp[Parent(curr)];
     Hp[Parent(curr)] = temp;
-    curr = Parent(curr);
+    curr             = Parent(curr);
 
     swaps++;
   }
@@ -379,11 +369,10 @@ void testsort()
   HeapT<int> mheap;
   int v;
 
-  Timer t1, t2;
   cout << endl << "Testing..." << endl;
   for(int j = 0; j < cycles; ++j)
   {
-    t1.start();
+    Timer t1.start();
     for(int i = 0; i < n; ++i)
     {
       v = genrand();
@@ -393,7 +382,7 @@ void testsort()
 
     cout << "Time to insert " << n << " elements" << endl << t1 << endl;
 
-    t2.start();
+    Timer t2.start();
     while(!mheap.isEmpty())
     {
       v = mheap.RemoveRoot();
@@ -424,7 +413,7 @@ int main(int argc, char** argv)
   }
   else
   {
-    cout << "Using defaults for cycles, n, and threshold" << endl
+    cout << "Using defaults for cycles and n elements" << endl
          << "To specify test config execute with the following:" << endl
          << "./<prog name> <cycles> <elements> <threshold>" << endl
          << "   cycles: the number of times the test should be performed" << endl
