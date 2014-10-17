@@ -28,14 +28,14 @@ stringstream sstr;
  */
 struct sstats
 {
-  /** num swaps in insertion sort **/
-  int iswaps,
-  /** num swaps in quick sort **/
-      qswaps,
-  /** num calls to insertion sort **/
-      icalls,
-  /** num calls to quick sort **/
-      qcalls;
+  /** num swaps in siftdown   **/
+  int sswaps,
+  /** num swaps in insertion  **/
+      iswaps,
+  /** num calls to siftdown   **/
+      scalls,
+  /** num calls to insertopm  **/
+      icalls;
 
   /**
    * Def construct
