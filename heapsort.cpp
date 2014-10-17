@@ -13,6 +13,7 @@ using namespace std;
 
 static int cycles = 1;
 static int n      = 11;
+static int sifts  = 0;
 
 const char* header = "";
 
@@ -206,6 +207,8 @@ bool HeapT<T>::isLeaf(int Vertex) const
 template <typename T>
 void HeapT<T>::SiftDown(int toSift)
 {
+  sifts++;
+  cout << "Sifting down" << endl;
   while ( !isLeaf(toSift) )
   {
     int MaxChild = leftChild(toSift);
@@ -237,6 +240,8 @@ void HeapT<T>::SiftDown(int toSift)
 template <typename T>
 T HeapT<T>::RemoveRoot()
 {
+
+  cout << "Removing Root...\n";
   bool linear = false;
   if (numVertices == 0) return T();
 
@@ -333,13 +338,18 @@ bool HeapT<T>::Insert(const T& Data)
   int curr = numVertices++;
   Hp[curr] = Data;
 
+  int swaps = 0;
   while(curr != 0 && Hp[curr] < Hp[Parent(curr)])
   {
     T temp = Hp[curr];
     Hp[curr] = Hp[Parent(curr)];
     Hp[Parent(curr)] = temp;
     curr = Parent(curr);
+
+    swaps++;
   }
+
+  cout << "Num swaps for insertion: " << swaps << endl;
   return true;
 }
 
@@ -391,7 +401,10 @@ void testsort()
     }
     t2.stop();
 
+    cout << "Total number of sift operations " << sifts << endl;
     cout << "Time to remove heap root with " << n << "elements" << endl << t2 << endl;
+
+    sifts = 0;
   }
 }
 
@@ -416,13 +429,12 @@ int main(int argc, char** argv)
          << "./<prog name> <cycles> <elements> <threshold>" << endl
          << "   cycles: the number of times the test should be performed" << endl
          << " elements: the number of elements to be sorted" << endl
-         << "threshold: the number of elements until quick sort defaults to inserstion sort"
-         << endl << endl;
+         << endl;
   }
 
   srand(time(NULL));  //seed random number generator
 
-  cout << "Test Quick Sort" << endl
+  cout << "Test Heap Sort" << endl
        << "   Cycles: " << cycles << endl
        << " Elements: " << n << endl;
   testsort();
