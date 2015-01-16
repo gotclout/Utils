@@ -162,7 +162,7 @@ HeapT<T>::HeapT(const HeapT & source)
  *
  */
 template<typename T>
-HeapT<T>& HeapT<T>::operator=(const HeapT& RHS)
+HeapT<T>& HeapT<T>::operator=(const HeapT& RHS) //FIXME
 {
     Hp = RHS.Hp;
     numVerticies = RHS.numVerticies;
