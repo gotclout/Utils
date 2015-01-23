@@ -170,8 +170,7 @@ class Timer
   {
     offset = 0; stopped = true; started = false;
     getTime(curTime);
-    if(startTimer)
-     start();
+    if(startTimer) start();
   };
 
   /**
@@ -194,6 +193,17 @@ class Timer
 
     return o;
   };
+
+  /**
+   * Subtraction operater overload computes time difference
+   */
+  tulong operator - (Timer & t)
+  {
+    tulong e1 =   getElapsedNSecs(),
+           e2 = t.getElapsedNSecs();
+
+    return e1 > e2 ? e1 - e2 : e2 - e1;
+  }
 
   /**
    * Get curr time NS public asccessor
