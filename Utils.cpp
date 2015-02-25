@@ -43,6 +43,13 @@ void aqsort(Container & c, const size_t left, const size_t right)
   }
 }
 
+//binary transformation
+#include <algorithm>
+int swapval(int  lhs,  int rhs)
+{
+  return lhs == rhs ? lhs : rhs;
+}
+
 //data type coersion
 template <typename T1, typename T2>
 T2 cast(T1 from, T2 to)
@@ -372,12 +379,21 @@ int main(int argc, char* argv[])
 
   cout << "\nSort Vector Test...\n\n";
   vector<int> ivector;
+  vector<int> uvector;
+
   for(int i = 7; i > -1; --i) ivector.push_back(i);
   cout << "unsorted ivector: ";
   for(int i = 0; i < ivector.size(); ++i) cout << ivector.at(i);
+  uvector = ivector;
   aqsort(ivector, 0, ivector.size() - 1);
   cout << "\n  sorted ivector: ";
   for(int i = 0; i < ivector.size(); ++i) cout << ivector.at(i);
+  cout << "\nunsorted uvector: ";
+  for(int i = 0; i < uvector.size(); ++i) cout << uvector.at(i);
+  transform(uvector.begin(), uvector.end(), ivector.begin(),
+            uvector.begin(), swapval);
+  cout << "\n  sorted uvector: ";
+  for(int i = 0; i < uvector.size(); ++i) cout << uvector.at(i);
 
   cout << "\n\nFile IO Test...\n\nCreating file buffer\n";
   buff = mkfilebuf(file);
