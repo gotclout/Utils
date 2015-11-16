@@ -164,9 +164,15 @@ HeapT<T>::HeapT(const HeapT & source)
 template<typename T>
 HeapT<T>& HeapT<T>::operator=(const HeapT& RHS) //FIXME
 {
-    Hp = RHS.Hp;
+    Sz           = RHS.Sz;
+    Hp           = new T[Sz]
     numVerticies = RHS.numVerticies;
-    Sz = RHS.Sz;
+    
+    for(int i = 0; i < Sz; ++i)
+      Hp[i] = RHS.Hp[i];
+      
+    
+    
 
     return(*this);
 }
