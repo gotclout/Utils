@@ -159,6 +159,7 @@ class Timer
    */
   Timer()
   {
+    sfx = eNsec;
     offset = 0; stopped = true; started = false;
     getTime(curTime);
   };
@@ -168,6 +169,7 @@ class Timer
    */
   Timer(bool startTimer)
   {
+    sfx = eNsec;
     offset = 0; stopped = true; started = false;
     getTime(curTime);
     if(startTimer) start();
