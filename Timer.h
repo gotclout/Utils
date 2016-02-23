@@ -31,7 +31,7 @@ int clock_gettime(int /* clk_id */, struct timespec* t)
 #endif//__MACH__
 
 //Posix or Mac OS
-#if defined(_POSIX_VERSION) || defined(__MACH__)
+#if defined (__unix__) || (defined (__APPLE__) && defined (__MACH__))
 
 /** suffix string constants **/
 const static char* suffix[] =
