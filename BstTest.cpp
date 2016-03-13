@@ -2,11 +2,11 @@
 #include<sstream>
 
 #include "Timer.h"
-#include "BinarySearchTree.h"
+#include "Bst.h"
 
 using namespace std;
 
-/** **/
+/** Test tree node size **/
 size_t N = 19;
 
 /**
@@ -40,57 +40,20 @@ void getvals(int gvals[])
  */
 void getrandvals(int gvals[])
 {
-  for(int i = 0; i < N; i++)
+  for(size_t i = 0; i < N; i++)
     gvals[i] = rand() % (2*N) + 1;
 }
 
 /**
- *
+ * Executes bst test with predefined or random values
  */
-void testinsertions()
-{
-}
-
-/**
- *
- */
-void testdeletions()
-{
-
-}
-
-/**
- *
- */
-void testsearch()
-{
-
-}
-
-/**
- *
- */
-void testnextnode()
-{
-
-}
-
-/**
- *
- */
-void testprevnode()
-{
-
-}
-
-/**
- *
- */
-void testprinting()
-{
-
-}
-
+ void test(bool userand = false)
+ {
+   int vals[N];
+   userand ? getrandvals(vals) : getvals(vals);
+   testtree(vals);
+ }
+ 
 /**
  * Test tree operations
  */
@@ -98,7 +61,7 @@ void testtree(int gvals[])
 {
   tree<int, int>* t = new tree<int, int>();
 
-  for(int i = 0, j = 10; i < N; i ++, j++)
+  for(size_t i = 0, j = 10; i < N; i ++, j++)
   {
     cout << "INSERTING: " << gvals[i] << endl;
     t->insert(gvals[i], gvals[i]);
@@ -134,6 +97,14 @@ void testtree(int gvals[])
     tnode<int, int>* pn = t->prevnode(tn);
     cout << "PREV NODE DEPTH\n" << *pn << endl;
   }
+  cout << "---NEAREST NODE SEARCH---\n";
+  if(tn)
+  {
+    tnode<int, int>* nr =
+      t->nearestnode((tnode<int, int>*)t->getRoot(), tn->kv.value - 1);
+    cout << *nr <<"SEARCH VALUE: " << tn->kv.value - 1 << endl
+         << "DISTANCE: " << abs(nr->kv.value - tn->kv.value - 1) << endl;
+  }
   cout << "\n---DELETING NODE---" << endl;
   if(tn) t->deletenode(tn);
   cout << "TREE DEPTH: " << t->getDepth() << endl;
@@ -160,16 +131,13 @@ int main(int argc, char** argv)
 
   Timer t1;
 
-  int vals[N];
-  getvals(vals);
   srand(time(0));
 
   t1.start();
-  testtree(vals);
+  test();
   t1.stop();
 
-  cout << "TIME: " << t1.duration() << endl;
+  cout << t1;
 
   return 0;
 }
-
