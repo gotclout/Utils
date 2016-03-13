@@ -157,7 +157,7 @@ class tree
      *
      * @return node* is the root of the tree
      */
-    node* getRoot() const
+    cnode* getRoot() const
     {
       return root;
     };
@@ -368,6 +368,46 @@ class tree
     };
 
     /**
+     * Retrieves the node whose value is closest to value v
+     *
+     * @param node* n, the node to compare distance
+     * @param V, the value to be compared
+     * @return the node whose distance is closest to Value v
+     */
+    node* nearestnode(node* n, V v)
+    {
+      node* nearest = n;
+      V d;
+
+      if(n)
+      {
+        d = abs(n->kv.value - v);
+
+        if(n->right)
+        {
+          node* rv =  nearestnode(n->right, v);
+          if(abs(rv->kv.value - v) < d)
+          {
+            nearest = rv;
+            d = abs(rv->kv.value - v);
+          }
+        }
+
+        if(n->left)
+        {
+          node* lv = nearestnode(n->left, v);
+          if(abs(lv->kv.value - v) < d)
+          {
+            nearest = lv;
+            d = abs(lv->kv.value - v);
+          }
+        }
+      }
+
+      return nearest;
+    }
+
+    /**
      * Retrieves the node following the specified node
      *
      * @param node* n is the specified node
@@ -492,7 +532,7 @@ class tree
      *
      * @param node* n is a pointer to the current node
      */
-    void printpreorder(node* n) const
+    void printpreorder(cnode* n) const
     {
       if(n)
       {
@@ -509,7 +549,7 @@ class tree
      *
      * @param node* n is a pointer to the current node
      */
-    void printinorder(node* n) const
+    void printinorder(cnode* n) const
     {
       if(n)
       {
@@ -526,7 +566,7 @@ class tree
      *
      * @param node* n is a pointer to the current node
      */
-    void printpostorder(node* n) const
+    void printpostorder(cnode* n) const
     {
       if(n)
       {
@@ -555,7 +595,7 @@ class tree
      */
     bool empty()
     {
-      return nodes == 0;
+      return nodes == 0; // return !root;  ?
     }
 
     /**
@@ -571,4 +611,3 @@ class tree
     };
 };
 #endif//_BST_
-
