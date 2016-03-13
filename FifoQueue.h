@@ -107,6 +107,11 @@ class queue
     };
 
     /**
+     * Retrieves the head node of the queue
+     */
+    qnode<Object>* front() { return head; };
+
+    /**
      * Retrieves the size of the queue
      */
     const int& size() const {return qsize;};
@@ -131,4 +136,3 @@ class queue
     };
 };
 #endif//_FIFOQUEUE_
-
