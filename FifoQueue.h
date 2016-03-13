@@ -24,6 +24,11 @@ class qnode
      * Default Constructor
      */
     qnode(const Object & o) { next = NULL; data = o; };
+    
+    /**
+     * TODO:
+     */
+     //friend ostream& operator << (ostream & o, qnode & n)
 };
 
 /**
@@ -134,5 +139,11 @@ class queue
         current = NULL;
       }
     };
+    
+    /**
+     *
+     * TODO:
+     */
+     //friend ostream& operator << (ostream & o, queue & q)
 };
 #endif//_FIFOQUEUE_
