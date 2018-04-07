@@ -343,8 +343,8 @@ int main(int argc, char* argv[])
 
   cout << "\nString Function Pointer\n";
   char* (*cscpfp) (const char* & src) = &cstrcp;
-  cout << "function pointer address: " << (uint32_t)cscpfp
-       << " function address: " << (uint32_t)cstrcp << '\n';
+  cout << "function pointer address: " << (uintptr_t)cscpfp
+       << " function address: " << (uintptr_t)cstrcp << '\n';
   char* copy = (*cscpfp) (original);
   if(copy)
   {
