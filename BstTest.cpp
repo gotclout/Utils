@@ -45,16 +45,6 @@ void getrandvals(int gvals[])
 }
 
 /**
- * Executes bst test with predefined or random values
- */
- void test(bool userand = false)
- {
-   int vals[N];
-   userand ? getrandvals(vals) : getvals(vals);
-   testtree(vals);
- }
- 
-/**
  * Test tree operations
  */
 void testtree(int gvals[])
@@ -118,6 +108,16 @@ void testtree(int gvals[])
 }
 
 /**
+ * Executes bst test with predefined or random values
+ */
+ void test(bool userand = false)
+ {
+   int vals[N];
+   userand ? getrandvals(vals) : getvals(vals);
+   testtree(vals);
+ }
+
+/**
  * Call tree test operatoions
  */
 int main(int argc, char** argv)
@@ -130,8 +130,6 @@ int main(int argc, char** argv)
   }
 
   Timer t1;
-
-  srand(time(0));
 
   t1.start();
   test();

@@ -162,6 +162,7 @@ class Timer
    */
   Timer()
   {
+    srand(time(0));
     sfx = eNsec;
     ssfx = getSuffix();
     offset = 0; stopped = true; started = false;
