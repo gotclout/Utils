@@ -13,10 +13,15 @@ typedef unsigned long long tulong;
 
 #ifdef __MACH__
 #include <sys/time.h>
-#warning "clock_gettime is not implemented on OSX"
+#warning "clock_gettime is not implemented on Mac OS using custom definition"
 
+#ifndef CLOCK_REALTIME
 #define CLOCK_REALTIME 0
+#endif
+
+#ifndef CLOCK_MONOTONIC
 #define CLOCK_MONOTONIC 0
+#endif
 
 int clock_gettime(int /* clk_id */, struct timespec* t)
 {
