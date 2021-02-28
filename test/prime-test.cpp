@@ -44,5 +44,11 @@ int main()
        << elapsed << " + " << ct.getDurationNSecs() << '\n'
        << elapsed + ct.getDurationNSecs() << "ns";
 
+  cout << endl << "Is prime 512641: ";
+
+  p.isprime(512641) ? cout << "True" : cout << "False";
+
+  cout << endl;
+
   return 0;
 }
